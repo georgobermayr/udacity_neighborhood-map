@@ -9,9 +9,15 @@
 </head>
 <body>
     <div class="small-12 medium-3 columns">
-        <ul data-bind="foreach: coordianteList">
-            <li data-bind="text: title"></li>
-        </ul>
+        <form data-bind="submit: filter">
+            <input data-bind="value: myFilter" />
+            <button type="submit">Go</button>
+        </form>
+
+        <div data-bind="foreach: coordianteList">
+            <h2 data-bind="text: title"></h2>
+            <p data-bind="text: text"></p>
+        </div>
     </div>
     <div class="small-12 medium-9 columns map">
         <div id="map-canvas"></div>

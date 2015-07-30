@@ -61,6 +61,8 @@ var Coordinate = function(data) {
 var ViewModel = function () {
   var self = this;
 
+  this.myFilter = ko.observable("");
+
   var mapOptions = {
     zoom: 12,
     center: new google.maps.LatLng(40.694853, -73.946722)
@@ -75,34 +77,53 @@ var ViewModel = function () {
     self.coordianteList.push( new Coordinate(coordiante) );
   })
 
-  var marker = [];
-  var infowindow = [];
+  this.Markers = function(marker, infowindow, filterString) {
 
-  for (var i = this.coordianteList().length - 1; i >= 0; i--) {
-    longitude = this.coordianteList()[i].longitude();
-    latitude = this.coordianteList()[i].latitude();
-    title = this.coordianteList()[i].title();
-    text = this.coordianteList()[i].text();
+    for (var i = 0; i < marker.length; i++ ) {
+      marker[i].setMap(null);
+    }
 
-    marker[i] = new google.maps.Marker({
-      position: new google.maps.LatLng(latitude, longitude),
-      map: map,
-      title: title
-    });
-    marker[i].index = i;
+    var marker = marker;
+    var infowindow = infowindow;
+    filterString = new RegExp(filterString,"i");;
 
-    infowindow[i] = new google.maps.InfoWindow({
-      content: text
-    });
+    for (var i = this.coordianteList().length - 1; i >= 0; i--) {
+      longitude = this.coordianteList()[i].longitude();
+      latitude = this.coordianteList()[i].latitude();
+      title = this.coordianteList()[i].title();
+      text = this.coordianteList()[i].text();
 
-    google.maps.event.addListener(marker[i], 'click', function() {
-      for (var i = infowindow.length - 1; i >= 0; i--) {
-        infowindow[i].close();
+      inTitle = title.match(filterString);
+      inText = text.match(filterString);
+
+      if (inTitle || inText) {
+        marker[i] = new google.maps.Marker({
+          position: new google.maps.LatLng(latitude, longitude),
+          map: map,
+          title: title
+        });
+        marker[i].index = i;
+
+        infowindow[i] = new google.maps.InfoWindow({
+          content: text
+        });
+
+        google.maps.event.addListener(marker[i], 'click', function() {
+          for (var i = infowindow.length - 1; i >= 0; i--) {
+            infowindow[i].close();
+          };
+          infowindow[this.index].open(map,marker[this.index]);
+          map.panTo(marker[this.index].getPosition());
+        });
       };
-      infowindow[this.index].open(map,marker[this.index]);
-      map.panTo(marker[this.index].getPosition());
-    });
-  };
+
+    };
+    return [marker, infowindow];
+  }
+
+  this.filter = function() {
+    this.Markers(marker, infowindow, this.myFilter());
+  }
 
   // this.currentCat = ko.observable( this.catList()[0] );
 
@@ -114,7 +135,10 @@ var ViewModel = function () {
   //   self.currentCat(clickedCat)
   // }
 
-}
+  var elements = this.Markers([], []);
+  marker = elements[0];
+  infowindow = elements[1];
 
+}
 
 window.onload = loadScript;
