@@ -1,3 +1,4 @@
+/* Full-Screen for all objects */
 html,
 body,
 .map,
@@ -5,4 +6,18 @@ body,
   height: 100%;
   margin: 0;
   padding: 0;
+}
+
+/* Overflow for the list view */
+.coordianteList {
+  margin-top: 45px;
+  height: 550px;
+  overflow: scroll;
+  background-color: #efefef;
+}
+
+/* Better font sizes for the search bar */
+input,
+button {
+  font-size: 18px;
 }

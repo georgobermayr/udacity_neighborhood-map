@@ -3,47 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <title>Neighborhood Mapp</title>
+    <!-- Foundation is used for the responsive grid -->
     <link rel="stylesheet" href="css/foundation.css" />
     <script src="js/lib/foundation/vendor/modernizr.js"></script>
     <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
+    <!-- Side bar with headline, search bar and list view -->
     <div class="small-12 medium-3 columns">
-        <form data-bind="submit: filter">
-            <input data-bind="value: myFilter" />
-            <button type="submit">Go</button>
-        </form>
+        <div class="navigation">
+            <h1>Brooklyn POI Map</h1>
+            <form data-bind="submit: filter">
+                <input data-bind="value: myFilter" type="text" placeholder="Filter for Headline or Text"/>
+                <button type="submit">Go</button>
+            </form>
 
-        <div data-bind="foreach: coordianteList">
-            <h2 data-bind="text: title"></h2>
-            <p data-bind="text: text"></p>
+            <div data-bind="foreach: coordianteList" class="coordianteList">
+                <h2 data-bind="text: title"></h2>
+                <p data-bind="text: text"></p>
+            </div>
         </div>
     </div>
+    <!-- Map canvas for Google maps, loaded via JavaScript -->
     <div class="small-12 medium-9 columns map">
         <div id="map-canvas"></div>
     </div>
 
-    <!--
-    <div data-bind="with:currentCat">
-
-        <h2 data-bind="text: name"></h2>
-        <h3 data-bind="text: title"></h3>
-        <div data-bind="text: clickCount"></div>
-        <img id="cat-img" src="" data-bind="click: $parent.incrementCounter, attr: {src: imgSrc}">
-        <div>
-            <h3>Nicknames</h3>
-            <ul data-bind="foreach: nicknames">
-                <li data-bind="text: $data"></li>
-            </ul>
-        </div>
-
-    </div> -->
+    <!-- JavaScript dependencies -->
     <script src="js/lib/foundation/vendor/jquery.js"></script>
     <script src="js/lib/foundation/foundation.min.js"></script>
     <script src="js/lib/knockout-3.2.0.js"></script>
     <script src="js/app.js"></script>
     <script>
-      $(document).foundation();
+        // Invoke Foundation grid
+        $(document).foundation();
     </script>
 </body>
 </html>
