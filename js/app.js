@@ -42,20 +42,6 @@ var Coordinate = function(data) {
   this.text = ko.observable(data.text);
   this.longitude = ko.observable(data.longitude);
   this.latitude = ko.observable(data.latitude);
-  // this.imgAttribution = ko.observable(data.imgAttribution);
-
-  // this.title = ko.computed(function(){
-  //   var title;
-  //   var clicks = this.clickCount;
-  //   if (clicks < 10) {
-  //     title = 'Newborn';
-  //   } else if (clicks < 50) {
-  //     title = 'Infant';
-  //   } else {
-  //     title = 'Ninja';
-  //   }
-  //   return title;
-  // }, this);
 }
 
 var ViewModel = function () {
@@ -75,7 +61,7 @@ var ViewModel = function () {
 
   initalCoordiantes.forEach(function(coordiante){
     self.coordianteList.push( new Coordinate(coordiante) );
-  })
+  });
 
   this.Markers = function(marker, infowindow, filterString) {
 
@@ -108,6 +94,8 @@ var ViewModel = function () {
           content: text
         });
 
+        this.wikipedia(latitude, longitude, infowindow[i], title);
+
         google.maps.event.addListener(marker[i], 'click', function() {
           for (var i = infowindow.length - 1; i >= 0; i--) {
             infowindow[i].close();
@@ -119,6 +107,33 @@ var ViewModel = function () {
 
     };
     return [marker, infowindow];
+  }
+
+
+
+  this.wikipedia = function(lat, long, infowindow, title) {
+    console.log(infowindow.content);
+    var titleURL = title.replace(/ /g, '%20');
+    var wikipediaUrl = 'http://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&titles='+titleURL;
+
+    var streetviewUrl = 'https://maps.googleapis.com/maps/api/streetview?size=600x400&location='+latitude+','+longitude;
+
+    $.ajax({
+        url: wikipediaUrl,
+        dataType: "jsonp",
+        success: function( response ) {
+          extract = response.query.pages[Object.keys(response.query.pages)[0]].extract;
+          if (extract) {
+            infowindowContent = '<strong>Wikipedia Description: </strong>'+extract+'<hr>';
+            infowindowContent = infowindowContent + '<img src="'+streetviewUrl+'" alt="" /><br>'+'Google Street View';
+            infowindow.setContent(infowindowContent);
+          } else {
+            infowindowContent = infowindow.content + '<hr>' + '<img src="'+streetviewUrl+'" alt="" /><br>'+'Google Street View';
+            infowindow.setContent(infowindowContent);
+          };
+        },
+        error: function() {}
+    });
   }
 
   this.filter = function() {
