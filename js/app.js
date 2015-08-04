@@ -58,14 +58,14 @@ var Coordinate = function(data) {
   this.longitude = ko.observable(data.longitude);
   this.latitude = ko.observable(data.latitude);
   this.type = ko.observable(data.type);
-}
+};
 
 // Knockout view model function
 var ViewModel = function () {
   var self = this;
 
   // Empty filter variable for search function
-  this.myFilter = ko.observable("");
+  self.myFilter = ko.observable("");
 
   // Initialze Google map in map-canvas DOM element with New York view
   var mapOptions = {
@@ -76,7 +76,7 @@ var ViewModel = function () {
     mapOptions);
 
   // Generate observableArray from data
-  this.coordianteList = ko.observableArray([]);
+  self.coordianteList = ko.observableArray();
   initalCoordiantes.forEach(function(coordiante){
     self.coordianteList.push( new Coordinate(coordiante) );
   });
@@ -84,10 +84,11 @@ var ViewModel = function () {
   // Render the markers on the map
   // Function is used for initial rendering with all markers
   // as well as for the filtering function with selective markers
-  this.Markers = function(marker, infowindow, filterString) {
+  self.Markers = function(marker, infowindow, filterString) {
 
     // First clear all markers for the filter
-    for (var i = 0; i < marker.length; i++ ) {
+    markerLength = marker.length;
+    for (var i = 0; i < markerLength; i++ ) {
       marker[i].setMap(null);
     }
 
@@ -96,7 +97,7 @@ var ViewModel = function () {
     var infowindow = infowindow;
 
     // Generate the regex for filtering title and text
-    filterString = new RegExp(filterString,"i");;
+    filterString = new RegExp(filterString,"i");
 
     // Iterate through each coordinate
     for (var i = this.coordianteList().length - 1; i >= 0; i--) {
@@ -146,19 +147,19 @@ var ViewModel = function () {
           // Close all other windows when this window is opendend
           for (var i = infowindow.length - 1; i >= 0; i--) {
             infowindow[i].close();
-          };
+          }
           infowindow[this.index].open(map,marker[this.index]);
           map.panTo(marker[this.index].getPosition());
         });
-      };
-    };
+      }
+    }
     // Return marker and infowindow arrays to the global scope
     return [marker, infowindow];
-  }
+  };
 
   // dataCall function for fetching data from external sources
   // and rendering it into the current info window
-  this.dataCall = function(lat, long, infowindow, title) {
+  self.dataCall = function(lat, long, infowindow, title) {
 
     // Generate the Wikipedia API call URL
     var titleURL = title.replace(/ /g, '%20');
@@ -190,24 +191,24 @@ var ViewModel = function () {
             // the model
             infowindowContent = infowindow.content + '<hr>' + '<img src="'+streetviewUrl+'" alt="" /><br>'+'Google Street View';
             infowindow.setContent(infowindowContent);
-          };
+          }
         },
         error: function() {}
     });
-  }
+  };
 
   // Filter function is called when user hits the search bar
-  this.filter = function() {
+  self.filter = function() {
     this.Markers(marker, infowindow, this.myFilter());
-  }
+  };
 
   // Calling the Markers function with empty arrays
   // Marker and info window variables are returned by the function
-  var elements = this.Markers([], []);
+  var elements = self.Markers([], []);
   marker = elements[0];
   infowindow = elements[1];
 
-}
+};
 
 // loadScript-Function is loaded on window load
 window.onload = loadScript;
